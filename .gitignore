@@ -1,0 +1,4 @@
+.idea
+03-sysadmin*/**/.vagrant
+04-script*/**/*.json
+04-script*/**/*.yml

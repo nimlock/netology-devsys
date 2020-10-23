@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+boxes = {
+  'server-bw-test' => '10',
+  'client-bw-test' => '20',
+}
+
+Vagrant.configure("2") do |config|
+	config.vm.network "private_network", virtualbox__intnet: true, auto_config: false
+	config.vm.box = "bento/ubuntu-20.04"
+	config.vm.provider "virtualbox" do |v|
+		v.cpus = 1
+		v.memory = 512
+	end
+
+	boxes.each do |k, v|
+	  config.vm.define k do |node|
+        node.vm.provision "shell" do |s|
+          s.inline = "hostname $1;"\
+            "ip addr add $2 dev eth1;"\
+            "ip link set dev eth1 up;"\
+            "apt -y install nginx iperf iproute2;"
+          s.args = [k, "172.28.128.#{v}/24"]
+        end
+      end
+    end
+	
+end

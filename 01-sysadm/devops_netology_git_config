@@ -1,0 +1,23 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = https://github.com/nimlock/devops-netology.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[user]
+	name = Иван Жиляев
+	email = nimlock@yandex.ru
+[remote "gitlab"]
+	url = https://gitlab.com/nimlock/devops-netology.git
+	fetch = +refs/heads/*:refs/remotes/gitlab/*
+[remote "bitbucket"]
+	url = https://nimlock@bitbucket.org/nimlock/devops-netology.git
+	fetch = +refs/heads/*:refs/remotes/bitbucket/*
+[branch "fix"]
+	remote = origin
+	merge = refs/heads/fix

@@ -1,0 +1,36 @@
+$provision_script = <<END
+
+# Установка Vault и сопутствующих программ
+#
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+apt-get update && apt-get install -y vault jq nginx
+
+# Настройка запуска Vault как службы
+#
+mkdir -p /etc/systemd/system/vault.service.d /var/vault
+chown vault: /var/vault
+echo -e "[Service]\nExecStart=\nExecStart=/usr/bin/vault server -dev -dev-listen-address=\"0.0.0.0:8200\"\nEnvironment=\"HOME=/var/vault\"" > /etc/systemd/system/vault.service.d/override.conf
+systemctl enable vault && systemctl daemon-reload && systemctl start vault
+
+# Служба Vault стартует из под пользователя без home-директории, что для работы в dev-режиме требует указания
+# для юнита переменной HOME, в которую сервис сгенерирует token-файл. В данной конфигурации это папка /var/vault.
+# Для того, чтобы клиентская часть Vault могла пользоваться этим token-файлом сделаем симлинк на него:
+#
+ln -s /var/vault/.vault-token ~/
+
+END
+
+
+Vagrant.configure("2") do |config|
+
+	config.vm.box = "bento/ubuntu-20.04"
+	config.vm.provider "virtualbox" do |v|
+		v.cpus = 1
+		v.memory = 512
+	end
+
+	config.vm.network "forwarded_port", guest: 8200, host: 8200
+
+	config.vm.provision "shell", inline:$provision_script
+end
